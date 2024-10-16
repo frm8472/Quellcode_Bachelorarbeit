@@ -3,6 +3,12 @@ rm(list = ls())
 # Generates random truth-table with the n input variables and 1 output variable
 # Returns a list of the random truth-table and the order of the input variables x_i needed to convert to z_i in the complete truth-table
 generate_truth_table <- function(number_input_variables, maximum_number_input_variables) {
+  
+  
+  # soll maximum_number_input_variables mal durchgeführt werden
+  
+  
+  
   # Generate a data-frame that contains all possible combinations for n input variables 
   possible_combinations <- expand.grid(replicate(number_input_variables, c(0, 1), simplify = FALSE))
   
