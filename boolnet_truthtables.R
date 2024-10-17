@@ -1,7 +1,22 @@
+library(BoolNet)
 # Funktion zur Erstellung einer Wahrheitstabelle für ein zufälliges Netzwerk
-create_truth_tables_boolnet <- function (number_of_genes_in_network, number_of_inputs_for_transition){
+create_truth_tables_boolnet <- function (number_of_genes_in_network, number_of_inputs_for_transition, fixed_poison_zeta){
+  if (fixed_poison_zeta == 0){
+    topology <- "fixed"
+  } else if(fixed_poison_zeta == 1){
+    topology <- "homogeneous"
+    
+  } else{
+    topology <- "scale_free"
+  }
+  
+  # Debugging: Überprüfe die Werte
+  print(paste("Gene:", number_of_genes_in_network))
+  print(paste("Inputs:", number_of_inputs_for_transition))
+  print(paste("Topology:", topology))
+  
   # Erzeuge ein zufälliges Genregulatorisches Netzwerk
-  network <- generateRandomNKNetwork(number_of_genes_in_network, number_of_inputs_for_transition)
+  network <- generateRandomNKNetwork(number_of_genes_in_network, number_of_inputs_for_transition, topology)
   
   # Extrahiere die Interaktionen des Netzwerks
   network_interactions <- network$interactions
@@ -37,6 +52,3 @@ create_truth_tables_boolnet <- function (number_of_genes_in_network, number_of_i
   return(truth_tables)
 }
 
-# Test der Funktion
-test_tables <- create_truth_tables_boolnet(5, 2)
-print(test_tables)

@@ -1,7 +1,28 @@
-rm(list = ls())
+
 
 # Generates random truth-table with the n input variables and 1 output variable
 # Returns a list of the random truth-table and the order of the input variables x_i needed to convert to z_i in the complete truth-table
+
+generate_all_truth_tables <- function (nodes_in_network, fix_or_limit, number_genes_input_transition){
+  list_all_truth_tables <- list()
+  
+  for (counter in 1:nodes_in_network){
+    if (fix_or_limit == TRUE){
+      number_input_variables <- number_genes_input_transition
+    } else{
+      number_input_variables <- sample(2:number_genes_input_transition, 1)
+    }
+    result_generate_truth_table <- generate_truth_table (number_input_variables, nodes_in_network)
+    current_truth_table <- sort_columns_of_truth_table(result_generate_truth_table$random_truth_table_matrix, result_generate_truth_table$z_indices)
+    list_all_truth_tables[[counter]] <- current_truth_table
+  }
+  result <- combine_truth_tables(list_all_truth_tables, nodes_in_network)
+  
+  return (result)
+}
+
+
+
 generate_truth_table <- function(number_input_variables, maximum_number_input_variables) {
   
   
@@ -22,7 +43,7 @@ generate_truth_table <- function(number_input_variables, maximum_number_input_va
   random_truth_table <- cbind(possible_combinations, y_output_variable)
   
   # Assign to the n first columns the names x_i. The last column is named y.
-  colnames(random_truth_table) <- c(paste0("x", 1:number_input_variables), "y")
+  colnames(random_truth_table) <- c(paste0("z", 1:number_input_variables), "y")
   
   # Convert the data-frame to a matrix
   random_truth_table_matrix <- as.matrix(random_truth_table)
@@ -52,7 +73,7 @@ sort_columns_of_truth_table <- function (truth_table, z_indices){
   sorted_truth_table <- truth_table[, sorting_indices]
   
   # Add the new column names z_i to the columns of the truth-table matrix
-  colnames(sorted_truth_table) <- paste0("z", z_indices_sorted)
+  colnames(sorted_truth_table) <- paste0("x", z_indices_sorted)
   
   # Append the last column containing the output variable to the truth-table
   sorted_truth_table <- cbind(sorted_truth_table, y =  truth_table[, (number_input_variables)])
@@ -67,7 +88,7 @@ combine_truth_tables <- function(list_truth_tables, maximum_number_input_variabl
   combined_truth_table_dataframe <- expand.grid(replicate(maximum_number_input_variables, c(0, 1), simplify = FALSE))
   
   # Name the columns of the dataframe z_i
-  colnames(combined_truth_table_dataframe) <- paste0("z", 1:maximum_number_input_variables)
+  colnames(combined_truth_table_dataframe) <- paste0("x", 1:maximum_number_input_variables)
   
   # Convert the data-frame to a matrix
   combined_truth_table_matrix <- as.matrix(combined_truth_table_dataframe)
@@ -106,24 +127,4 @@ combine_truth_tables <- function(list_truth_tables, maximum_number_input_variabl
   # Return the combined truth table with the added y-columns
   return(combined_truth_table_matrix)
 }
-
-
-
-
-###########################################
-#               EXAMPLE                   #  
-###########################################
-
-result_truth_table_1 <- generate_truth_table(3,5)
-
-result_truth_table_2 <- generate_truth_table(2,5)
-
-print(result_truth_table_1$random_truth_table_matrix)
-print(result_truth_table_1$z_indices)
-
-result_sorted_1 <- sort_columns_of_truth_table(result_truth_table_1$random_truth_table_matrix, result_truth_table_1$z_indices)
-result_sorted_2 <- sort_columns_of_truth_table(result_truth_table_2$random_truth_table_matrix, result_truth_table_2$z_indices)
-
-result <-  combine_truth_tables(list(result_sorted_1, result_sorted_2), 5)
-print(result)
 
